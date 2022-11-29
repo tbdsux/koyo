@@ -1,0 +1,16 @@
+{
+  "name": "@koyo/types",
+  "version": "1.0.0",
+  "private": true,
+  "description": "",
+  "main": "index.js",
+  "types": "./output/index.d.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "rm -rf .output && pnpm tsc",
+    "dev": "pnpm tsc --watch"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

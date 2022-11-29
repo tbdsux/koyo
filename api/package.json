@@ -1,0 +1,23 @@
+{
+  "name": "@koyo/api",
+  "version": "1.0.0",
+  "description": "",
+  "main": ".output/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "pnpm tsc",
+    "dev": "concurrently \"pnpm tsc --watch\" \"nodemon -q .output/index.js\" "
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@koyo/types": "workspace:1.0.0",
+    "express": "^4.18.2"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.14",
+    "concurrently": "^7.6.0",
+    "nodemon": "^2.0.20"
+  }
+}

@@ -1,0 +1,7 @@
+node_modules
+
+
+# build / output folders
+.svelte-kit
+.output
+.turbo
