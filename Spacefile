@@ -1,0 +1,12 @@
+# Spacefile Docs: https://go.deta.dev/docs/spacefile/v0
+v: 0
+micros:
+  - name: website
+    src: ./website
+    engine: svelte-kit
+    primary: true
+
+  - name: api
+    src: ./api
+    engine: nodejs16
+    run: 'node index.js'
