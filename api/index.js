@@ -1,10 +1,12 @@
 const express = require('express');
 const chromium = require('@sparticuz/chromium');
 const puppeteer = require('puppeteer');
+const cors = require('cors');
 
 const app = express();
 const port = 8080;
 
+app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -15,7 +17,7 @@ app.get('/', (req, res) => {
 app.post('/screenshot', async (req, res) => {
 	const { website } = req.body;
 	if (!website) {
-		res.status(400).json({ error: true, message: 'Website url not defined in body.' });
+		res.status(400).json({ error: true, message: 'Website url not defined in body.', code: 400 });
 		return;
 	}
 
@@ -42,7 +44,7 @@ app.post('/screenshot', async (req, res) => {
 		});
 		res.end(img);
 	} catch (e) {
-		res.status(500).json({ error: true, message: String(e) });
+		res.status(500).json({ error: true, message: String(e), code: 500 });
 	}
 });
 

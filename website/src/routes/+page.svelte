@@ -1,4 +1,41 @@
 <script lang="ts">
+	import { apiUrl, type APIResponse } from '$lib/api';
+	import type { Blob } from 'buffer';
+	import RenderImage from './RenderImage.svelte';
+
+	let websiteUrl = '';
+	let error = false;
+	let errorData: APIResponse | null = null;
+	let fetching = false;
+
+	let imageData = '';
+
+	const fetchScreenshot = async () => {
+		if (!websiteUrl) return;
+
+		fetching = true;
+
+		const r = await fetch(apiUrl + '/screenshot', {
+			method: 'POST',
+			headers: {
+				'content-type': 'application/json'
+			},
+			body: JSON.stringify({ website: websiteUrl })
+		});
+
+		fetching = false;
+
+		if (!r.ok) {
+			error = true;
+			errorData = await r.json();
+			return;
+		}
+
+		error = false;
+		errorData = null;
+		const imgBlog = await r.blob();
+		imageData = URL.createObjectURL(imgBlog);
+	};
 </script>
 
 <header class="py-4 w-5/6 mx-auto text-center">
@@ -13,6 +50,7 @@
 		<label for="website" class="text-neutral-700">Enter website url:</label>
 		<div class="flex items-center">
 			<input
+				bind:value={websiteUrl}
 				type="text"
 				id="website"
 				name="website"
@@ -21,7 +59,9 @@
 			/>
 
 			<button
-				class="inline-flex items-center text-sm bg-blue-400 hover:bg-blue-500 py-2 px-8 rounded-xl text-white duration-300 ml-2"
+				on:click={fetchScreenshot}
+				disabled={fetching}
+				class="inline-flex items-center text-sm bg-blue-400 hover:bg-blue-500 py-2 px-8 rounded-xl text-white duration-300 ml-2 disabled:opacity-80 disabled:hover:bg-blue-400"
 			>
 				<svg
 					xmlns="http://www.w3.org/2000/svg"
@@ -38,10 +78,24 @@
 					/>
 				</svg>
 
-				<span class="ml-1">Screenshot</span>
+				<span class="ml-1">
+					{#if fetching}
+						Fetching...
+					{:else}
+						Screenshot
+					{/if}</span
+				>
 			</button>
 		</div>
 	</div>
 
-	<div class="mt-12 border h-screen bg-gray-200 animate-pulse overflow-auto" />
+	<div class="mt-12 h-screen w-full relative overflow-auto mb-20">
+		{#if fetching}
+			<div class="h-full w-full animate-pulse bg-gray-300" />
+		{:else if error}
+			<p>{JSON.stringify(errorData)}</p>
+		{:else if imageData != ''}
+			<RenderImage bind:imageData bind:websiteUrl />
+		{/if}
+	</div>
 </div>
