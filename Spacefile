@@ -10,3 +10,4 @@ micros:
     src: ./api
     engine: nodejs16
     run: 'node index.js'
+    path: api
