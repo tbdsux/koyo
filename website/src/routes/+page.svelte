@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { apiUrl, type APIResponse } from '$lib/api';
-	import type { Blob } from 'buffer';
 	import RenderImage from './RenderImage.svelte';
 
 	let websiteUrl = '';
@@ -13,6 +12,7 @@
 	const fetchScreenshot = async () => {
 		if (!websiteUrl) return;
 
+		imageData = '';
 		fetching = true;
 
 		const r = await fetch(apiUrl + '/screenshot', {
@@ -55,7 +55,7 @@
 				id="website"
 				name="website"
 				class="py-2 px-5 rounded-xl border-2 outline-none hover:border-blue-500 focus:border-blue-500 w-full"
-				placeholder="Enter the website url..."
+				placeholder="https://www.deta.sh"
 			/>
 
 			<button
