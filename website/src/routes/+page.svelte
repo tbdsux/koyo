@@ -3,6 +3,12 @@
 	import RenderImage from './RenderImage.svelte';
 
 	let websiteUrl = '';
+	let optionsHeight = 800;
+	let optionsWidth = 1280;
+	let optionsFullpage = false;
+	let optionsImageType = 'png';
+
+	let showOptions = false;
 	let error = false;
 	let errorData: APIResponse | null = null;
 	let fetching = false;
@@ -15,7 +21,16 @@
 		imageData = '';
 		fetching = true;
 
-		const r = await fetch(apiUrl + '/screenshot', {
+		const params = new URLSearchParams({
+			height: optionsHeight.toString(),
+			width: optionsWidth.toString(),
+			imageType: optionsImageType.toString(),
+			fullPage: optionsFullpage.toString()
+		});
+		const paramQueries = params.toString();
+		const url = paramQueries != '' ? `/screenshot?${paramQueries}` : '/screenshot';
+
+		const r = await fetch(apiUrl + url, {
 			method: 'POST',
 			headers: {
 				'content-type': 'application/json'
@@ -86,6 +101,66 @@
 					{/if}</span
 				>
 			</button>
+		</div>
+
+		<div class="mt-2">
+			<button class="text-xs text-gray-600" on:click={() => (showOptions = !showOptions)}>
+				{showOptions ? 'Hide' : 'Show'} options</button
+			>
+
+			{#if showOptions}
+				<div
+					class="flex items-center justify-center flex-wrap p-2 rounded-xl border border-gray-100"
+				>
+					<div class="inline-flex flex-col m-2">
+						<label for="width" class="text-sm text-gray-700">Width</label>
+						<input
+							bind:value={optionsWidth}
+							type="number"
+							min={240}
+							max={16834}
+							name="width"
+							id="width"
+							class="py-2 px-3 text-sm border rounded-xl w-32 disabled:opacity-80"
+						/>
+					</div>
+					<div class="inline-flex flex-col m-2">
+						<label for="height" class="text-sm text-gray-700">Height</label>
+						<input
+							bind:value={optionsHeight}
+							disabled={optionsFullpage}
+							type="number"
+							min={240}
+							max={16834}
+							name="height"
+							id="height"
+							class="py-2 px-3 text-sm border rounded-xl w-32"
+						/>
+					</div>
+
+					<div class="inline-flex flex-col m-2">
+						<label for="width" class="text-sm text-gray-700">Image Type</label>
+						<select
+							bind:value={optionsImageType}
+							class="py-2 px-3 text-sm border rounded-xl w-32 disabled:opacity-80 bg-white"
+						>
+							<option value="png">png</option>
+							<option value="jpeg">jpeg</option>
+							<option value="webp">webp</option>
+						</select>
+					</div>
+					<div class="inline-flex items-center flex-row m-2">
+						<input
+							bind:checked={optionsFullpage}
+							type="checkbox"
+							name="cache"
+							id="cache"
+							class="h-4 w-4 text-sm border rounded-xl"
+						/>
+						<label for="cache" class="text-sm ml-1 text-gray-700">Full Page</label>
+					</div>
+				</div>
+			{/if}
 		</div>
 	</div>
 

@@ -15,31 +15,48 @@ app.get('/', (req, res) => {
 });
 
 app.post('/screenshot', async (req, res) => {
+	/** @type {import('./types').ScreenshotBodyOptions} */
 	const { website } = req.body;
 	if (!website) {
 		res.status(400).json({ error: true, message: 'Website url not defined in body.', code: 400 });
 		return;
 	}
 
+	/** @type {import('./types').ScreenshotApiOptions} */
+	const { height, width, imageType, fullPage } = req.query;
+
+	const _height = !isNaN(Number(height)) ? Number(height) : 1280;
+	const _width = !isNaN(Number(width)) ? Number(width) : 800;
+	const _fullPage = fullPage === 'true';
+
+	/** @type {import('puppeteer').Viewport} */
+	const viewport = {
+		width: _width,
+		height: _height
+	};
+
 	try {
 		const browser = await puppeteer.launch({
 			args: chromium.args,
-			defaultViewport: chromium.defaultViewport,
 			executablePath: await chromium.executablePath,
 			headless: chromium.headless,
 			ignoreHTTPSErrors: true
 		});
 		const page = await browser.newPage();
-		await page.goto(website, { waitUntil: 'domcontentloaded' });
+		await page.goto(website, { waitUntil: 'networkidle2' });
 
-		const data = await page.screenshot({ encoding: 'base64' });
-		const base64Data = data.replace(/^data:image\/png;base64,/, '');
-		const img = Buffer.from(base64Data, 'base64');
+		if (_fullPage) {
+			viewport.height = 16834;
+		}
+		await page.setViewport(viewport);
+
+		const data = await page.screenshot({ encoding: 'base64', _fullPage, type: imageType });
+		const img = Buffer.from(data, 'base64');
 
 		await browser.close();
 
 		res.writeHead(200, {
-			'Content-Type': 'image/png',
+			'Content-Type': `image/${imageType}`,
 			'Content-Length': img.length
 		});
 		res.end(img);
