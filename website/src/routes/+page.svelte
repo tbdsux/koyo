@@ -7,6 +7,7 @@
 	let optionsWidth = 1280;
 	let optionsFullpage = false;
 	let optionsImageType = 'png';
+	let optionsDriver = 'playwright';
 
 	let showOptions = false;
 	let error = false;
@@ -21,11 +22,16 @@
 		imageData = '';
 		fetching = true;
 
+		if (optionsDriver === 'playwright') {
+			optionsImageType = 'png';
+		}
+
 		const params = new URLSearchParams({
 			height: optionsHeight.toString(),
 			width: optionsWidth.toString(),
-			imageType: optionsImageType.toString(),
-			fullPage: optionsFullpage.toString()
+			imageType: optionsImageType,
+			fullPage: optionsFullpage.toString(),
+			driver: optionsDriver
 		});
 		const paramQueries = params.toString();
 		const url = paramQueries != '' ? `/screenshot?${paramQueries}` : '/screenshot';
@@ -124,6 +130,7 @@
 							class="py-2 px-3 text-sm border rounded-xl w-32 disabled:opacity-80"
 						/>
 					</div>
+
 					<div class="inline-flex flex-col m-2">
 						<label for="height" class="text-sm text-gray-700">Height</label>
 						<input
@@ -146,9 +153,21 @@
 						>
 							<option value="png">png</option>
 							<option value="jpeg">jpeg</option>
-							<option value="webp">webp</option>
+							<option disabled={optionsDriver === 'playwright'} value="webp">webp</option>
 						</select>
 					</div>
+
+					<div class="inline-flex flex-col m-2">
+						<label for="width" class="text-sm text-gray-700">Driver</label>
+						<select
+							bind:value={optionsDriver}
+							class="py-2 px-3 text-sm border rounded-xl w-32 disabled:opacity-80 bg-white"
+						>
+							<option value="playwright">playwright</option>
+							<option value="puppeteer">puppeteer</option>
+						</select>
+					</div>
+
 					<div class="inline-flex items-center flex-row m-2">
 						<input
 							bind:checked={optionsFullpage}
