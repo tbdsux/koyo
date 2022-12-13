@@ -1,6 +1,9 @@
 <script lang="ts">
 	import { apiUrl, type APIResponse } from '$lib/api';
+	import type { PageServerData } from './$types';
 	import RenderImage from './RenderImage.svelte';
+
+	export let data: PageServerData;
 
 	let websiteUrl = '';
 	let optionsHeight = 800;
@@ -172,15 +175,23 @@
 						<input
 							bind:checked={optionsFullpage}
 							type="checkbox"
-							name="cache"
-							id="cache"
+							name="fullpage"
+							id="fullpage"
 							class="h-4 w-4 text-sm border rounded-xl"
 						/>
-						<label for="cache" class="text-sm ml-1 text-gray-700">Full Page</label>
+						<label for="fullpage" class="text-sm ml-1 text-gray-700">Full Page</label>
 					</div>
 				</div>
 			{/if}
 		</div>
+
+		<pre
+			class="mt-4 overflow-auto text-left text-sm bg-gray-100 text-gray-700 py-2 px-3 rounded-xl">
+{`curl -X POST \\
+	'${data.baseUrl}/screenshot?height=${optionsHeight}&width=${optionsWidth}&imageType=${optionsImageType}&fullPage=${optionsFullpage}' \\
+	--header 'Content-Type: application/json' \\
+	--data-raw '{"website":"${websiteUrl}"}'`}
+		</pre>
 	</div>
 
 	<div class="mt-12 h-screen w-full relative overflow-auto mb-20">
