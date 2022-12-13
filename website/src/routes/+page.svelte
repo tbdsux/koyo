@@ -63,29 +63,32 @@
 </script>
 
 <header class="py-4 w-5/6 mx-auto text-center">
-	<h1 class="font-black text-xl text-blue-500">koyo</h1>
+	<span class="inline-flex items-center">
+		<img src="/favicon.png" alt="Koyo" class="object-fit h-12 w-12" />
+		<h1 class="font-black text-xl text-blue-500">Koyo</h1>
+	</span>
 	<p class="text-neutral-600">Website screenshot service api</p>
 </header>
 
 <hr class="w-1/2 mx-auto my-3 border-gray-100" />
 
 <div>
-	<div class="flex flex-col text-left w-3/5 mx-auto">
+	<div class="flex flex-col text-left w-full sm:w-11/12 md:w-5/6 lg:w-4/5 xl:w-3/5 mx-auto">
 		<label for="website" class="text-neutral-700">Enter website url:</label>
-		<div class="flex items-center">
+		<div class="flex items-center flex-col md:flex-row">
 			<input
 				bind:value={websiteUrl}
 				type="text"
 				id="website"
 				name="website"
-				class="py-2 px-5 rounded-xl border-2 outline-none hover:border-blue-500 focus:border-blue-500 w-full"
+				class="m-1 py-2 px-5 rounded-xl border-2 outline-none hover:border-blue-500 focus:border-blue-500 w-full"
 				placeholder="https://www.deta.sh"
 			/>
 
 			<button
 				on:click={fetchScreenshot}
 				disabled={fetching}
-				class="inline-flex items-center text-sm bg-blue-400 hover:bg-blue-500 py-2 px-8 rounded-xl text-white duration-300 ml-2 disabled:opacity-80 disabled:hover:bg-blue-400"
+				class="m-1 inline-flex items-center text-sm bg-blue-400 hover:bg-blue-500 py-2 px-8 rounded-xl text-white duration-300 disabled:opacity-80 disabled:hover:bg-blue-400"
 			>
 				<svg
 					xmlns="http://www.w3.org/2000/svg"
@@ -194,7 +197,7 @@
 		</pre>
 	</div>
 
-	<div class="mt-12 h-screen w-full relative overflow-auto mb-20">
+	<div class="mt-12 h-screen w-full relative overflow-auto bg-gray-50 mb-20">
 		{#if fetching}
 			<div class="h-full w-full animate-pulse bg-gray-300" />
 		{:else if error}
