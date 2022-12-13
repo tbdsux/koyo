@@ -3,6 +3,8 @@ const chromium = require('@sparticuz/chromium');
 const { chromium: playwright } = require('playwright-core');
 const puppeteer = require('puppeteer');
 const cors = require('cors');
+const FormData = require('form-data');
+const fetch = require('cross-fetch');
 
 const app = express();
 const port = 8080;
@@ -26,12 +28,13 @@ app.post('/screenshot', async (req, res) => {
 	}
 
 	/** @type {import('./types').ScreenshotApiOptions} */
-	const { height, width, imageType, fullPage, driver } = req.query;
+	const { height, width, imageType, fullPage, driver, whiteholeUrl } = req.query;
 
 	const _height = !isNaN(Number(height)) ? Number(height) : 1280;
 	const _width = !isNaN(Number(width)) ? Number(width) : 800;
 	const _fullPage = fullPage === 'true';
 	const _usePuppeteer = driver === 'puppeteer';
+	const _whiteholeUrl = whiteholeUrl ?? '';
 	let _imageType = imageTypes.includes(imageType) ? imageType : 'png';
 
 	/** @type {import('puppeteer').Viewport} */
@@ -80,6 +83,29 @@ app.post('/screenshot', async (req, res) => {
 			img = await page.screenshot({ fullPage: _fullPage, type: _imageType });
 		}
 
+		// send to whitehole if exists
+		if (_whiteholeUrl != '') {
+			const form = new FormData();
+			form.append('photo', img, `${website}.${imageType}`);
+
+			try {
+				const r = await fetch(_whiteholeUrl, {
+					method: 'POST',
+					body: form
+				});
+
+				const data = await r.json();
+				const { error, status } = data;
+				if (!status) {
+					res.status(500).json({ error: false, message: error, code: 500 });
+					return;
+				}
+			} catch (e) {
+				res.status(500).json({ error: true, message: String(e), code: 500 });
+				return;
+			}
+		}
+
 		res.writeHead(200, {
 			'Content-Type': `image/${_imageType}`,
 			'Content-Length': img.length
@@ -91,5 +117,5 @@ app.post('/screenshot', async (req, res) => {
 });
 
 app.listen(port, () => {
-	console.log(`Example app listening on http://localhost:${port}`);
+	console.log(`App listening on http://localhost:${port}`);
 });

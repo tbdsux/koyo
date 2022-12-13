@@ -4,6 +4,7 @@ export interface ScreenshotApiOptions {
 	imageType?: 'png' | 'jpeg' | 'webp';
 	fullPage?: string;
 	driver?: 'playwright' | 'puppeteer';
+	whiteholeUrl?: string;
 }
 
 export interface ScreenshotBodyOptions {

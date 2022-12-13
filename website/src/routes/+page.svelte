@@ -11,8 +11,9 @@
 	let optionsFullpage = false;
 	let optionsImageType = 'png';
 	let optionsDriver = 'playwright';
+	let optionsWhitehole = '';
 
-	let showOptions = false;
+	let showOptions = true;
 	let error = false;
 	let errorData: APIResponse | null = null;
 	let fetching = false;
@@ -34,7 +35,8 @@
 			width: optionsWidth.toString(),
 			imageType: optionsImageType,
 			fullPage: optionsFullpage.toString(),
-			driver: optionsDriver
+			driver: optionsDriver,
+			whiteholeUrl: optionsWhitehole
 		});
 		const paramQueries = params.toString();
 		const url = paramQueries != '' ? `/screenshot?${paramQueries}` : '/screenshot';
@@ -121,68 +123,84 @@
 			>
 
 			{#if showOptions}
-				<div
-					class="flex items-center justify-center flex-wrap p-2 rounded-xl border border-gray-100"
-				>
-					<div class="inline-flex flex-col m-2">
-						<label for="width" class="text-sm text-gray-700">Width</label>
-						<input
-							bind:value={optionsWidth}
-							type="number"
-							min={240}
-							max={16834}
-							name="width"
-							id="width"
-							class="py-2 px-3 text-sm border rounded-xl w-32 disabled:opacity-80"
-						/>
+				<div class="px-2 py-4 rounded-xl border border-gray-100">
+					<div class="flex items-center justify-center flex-wrap">
+						<div class="inline-flex flex-col m-2">
+							<label for="width" class="text-sm text-gray-700">Width</label>
+							<input
+								bind:value={optionsWidth}
+								type="number"
+								min={240}
+								max={16834}
+								name="width"
+								id="width"
+								class="py-2 px-3 text-sm border rounded-xl w-32 disabled:opacity-80"
+							/>
+						</div>
+
+						<div class="inline-flex flex-col m-2">
+							<label for="height" class="text-sm text-gray-700">Height</label>
+							<input
+								bind:value={optionsHeight}
+								disabled={optionsFullpage}
+								type="number"
+								min={240}
+								max={16834}
+								name="height"
+								id="height"
+								class="py-2 px-3 text-sm border rounded-xl w-32"
+							/>
+						</div>
+
+						<div class="inline-flex flex-col m-2">
+							<label for="width" class="text-sm text-gray-700">Image Type</label>
+							<select
+								bind:value={optionsImageType}
+								class="py-2 px-3 text-sm border rounded-xl w-32 disabled:opacity-80 bg-white"
+							>
+								<option value="png">png</option>
+								<option value="jpeg">jpeg</option>
+								<option disabled={optionsDriver === 'playwright'} value="webp">webp</option>
+							</select>
+						</div>
+
+						<div class="inline-flex flex-col m-2">
+							<label for="width" class="text-sm text-gray-700">Driver</label>
+							<select
+								bind:value={optionsDriver}
+								class="py-2 px-3 text-sm border rounded-xl w-32 disabled:opacity-80 bg-white"
+							>
+								<option value="playwright">playwright</option>
+								<option value="puppeteer">puppeteer</option>
+							</select>
+						</div>
+
+						<div class="inline-flex items-center flex-row m-2">
+							<input
+								bind:checked={optionsFullpage}
+								type="checkbox"
+								name="fullpage"
+								id="fullpage"
+								class="h-4 w-4 text-sm border rounded-xl"
+							/>
+							<label for="fullpage" class="text-sm ml-1 text-gray-700">Full Page</label>
+						</div>
 					</div>
 
-					<div class="inline-flex flex-col m-2">
-						<label for="height" class="text-sm text-gray-700">Height</label>
-						<input
-							bind:value={optionsHeight}
-							disabled={optionsFullpage}
-							type="number"
-							min={240}
-							max={16834}
-							name="height"
-							id="height"
-							class="py-2 px-3 text-sm border rounded-xl w-32"
-						/>
-					</div>
+					<hr class="my-4 mx-8 border-gray-100" />
 
-					<div class="inline-flex flex-col m-2">
-						<label for="width" class="text-sm text-gray-700">Image Type</label>
-						<select
-							bind:value={optionsImageType}
-							class="py-2 px-3 text-sm border rounded-xl w-32 disabled:opacity-80 bg-white"
-						>
-							<option value="png">png</option>
-							<option value="jpeg">jpeg</option>
-							<option disabled={optionsDriver === 'playwright'} value="webp">webp</option>
-						</select>
-					</div>
-
-					<div class="inline-flex flex-col m-2">
-						<label for="width" class="text-sm text-gray-700">Driver</label>
-						<select
-							bind:value={optionsDriver}
-							class="py-2 px-3 text-sm border rounded-xl w-32 disabled:opacity-80 bg-white"
-						>
-							<option value="playwright">playwright</option>
-							<option value="puppeteer">puppeteer</option>
-						</select>
-					</div>
-
-					<div class="inline-flex items-center flex-row m-2">
-						<input
-							bind:checked={optionsFullpage}
-							type="checkbox"
-							name="fullpage"
-							id="fullpage"
-							class="h-4 w-4 text-sm border rounded-xl"
-						/>
-						<label for="fullpage" class="text-sm ml-1 text-gray-700">Full Page</label>
+					<div class="flex items-center justify-center">
+						<div class="flex flex-col w-11/12 md:w-5/6  2xl:w-1/2 mx-auto">
+							<label for="height" class="text-sm text-gray-700">Whitehole</label>
+							<input
+								bind:value={optionsWhitehole}
+								type="text"
+								placeholder="Whitehole integration url"
+								name="whitehole"
+								id="whitehole"
+								class="py-2 px-3 text-sm border rounded-xl w-full"
+							/>
+						</div>
 					</div>
 				</div>
 			{/if}
