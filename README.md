@@ -4,6 +4,10 @@
     <p>Web screenshot service api</p>
 </div>
 
+## New Features
+
+- Whitehole integration from https://alpha.deta.space/discovery/@mikhailsdv/black_hole-3kf
+
 ## Known Issues
 
 - Full page screenshot doesn't work on some websites.

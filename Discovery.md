@@ -6,6 +6,10 @@ git: 'https://github.com/TheBoringDude/koyo'
 homepage: 'https://github.com/TheBoringDude/koyo'
 ---
 
+## New Features
+
+- Whitehole integration from https://alpha.deta.space/discovery/@mikhailsdv/black_hole-3kf
+
 ## Known Issues
 
 - Full page screenshot doesn't work on some websites.

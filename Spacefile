@@ -6,11 +6,11 @@ micros:
     src: ./website
     engine: svelte-kit
     primary: true
-    public_routes:
-      - '/api/*'
 
   - name: api
     src: ./api
     engine: nodejs16
     run: 'node index.js'
     path: api
+    public_routes:
+      - '/*'

@@ -209,9 +209,14 @@
 		<pre
 			class="mt-4 overflow-auto text-left text-sm bg-gray-100 text-gray-700 py-2 px-3 rounded-xl">
 {`curl -X POST \\
-	'${data.baseUrl}/screenshot?height=${optionsHeight}&width=${optionsWidth}&imageType=${optionsImageType}&fullPage=${optionsFullpage}' \\
+	'${
+		data.baseUrl
+	}/screenshot?height=${optionsHeight}&width=${optionsWidth}&imageType=${optionsImageType}&fullPage=${optionsFullpage}${
+				optionsWhitehole ? '&whiteholeUrl=' + optionsWhitehole : ''
+			}' \\
 	--header 'Content-Type: application/json' \\
-	--data-raw '{"website":"${websiteUrl}"}'`}
+	--data-raw '{"website":"${websiteUrl}"}' \\
+	--output screenshot.${optionsImageType}`}
 		</pre>
 	</div>
 
@@ -219,7 +224,7 @@
 		{#if fetching}
 			<div class="h-full w-full animate-pulse bg-gray-300" />
 		{:else if error}
-			<p>{JSON.stringify(errorData)}</p>
+			<pre class="text-sm text-left p-4">{JSON.stringify(errorData, null, 4)}</pre>
 		{:else if imageData != ''}
 			<RenderImage bind:imageData bind:websiteUrl />
 		{/if}
