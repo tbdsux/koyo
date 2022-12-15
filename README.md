@@ -14,15 +14,31 @@
 
 ## Development
 
-This project is a monorepo, so open it in the parent folder.
+This project is a monorepo using `pnpm`.
 
-- `api`
+- Clone the repository
 
-  Expressjs, main screenshot api.
+  ```sh
+  git clone https://github.com/TheBoringDude/koyo.git
+  ```
 
-- `website`
+- Install the dependencies
 
-  Sveltekit website frontend.
+  ```sh
+  pnpm install
+  ```
+
+- Start development. This will run the both the api and frontend projects together simultaneously.
+
+  ```sh
+  pnpm dev
+  ```
+
+### Project structure
+
+- `api` - Expressjs, main screenshot api.
+
+- `website` - Sveltekit website frontend.
 
 ##
 
