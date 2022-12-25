@@ -14,17 +14,19 @@
 	let optionsWhitehole = '';
 
 	let showOptions = true;
+	let show = false;
 	let error = false;
 	let errorData: APIResponse | null = null;
 	let fetching = false;
 
-	let imageData = '';
+	let imageUrl: string = '';
 
 	const fetchScreenshot = async () => {
 		if (!websiteUrl) return;
 
-		imageData = '';
+		imageUrl = '';
 		fetching = true;
+		show = true;
 
 		if (optionsDriver === 'playwright') {
 			optionsImageType = 'png';
@@ -39,6 +41,9 @@
 			whiteholeUrl: optionsWhitehole
 		});
 		const paramQueries = params.toString();
+		if (paramQueries == '') {
+			return;
+		}
 		const url = paramQueries != '' ? `/screenshot?${paramQueries}` : '/screenshot';
 
 		const r = await fetch(apiUrl + url, {
@@ -59,8 +64,8 @@
 
 		error = false;
 		errorData = null;
-		const imgBlog = await r.blob();
-		imageData = URL.createObjectURL(imgBlog);
+		const imageData = await r.blob();
+		imageUrl = URL.createObjectURL(imageData);
 	};
 </script>
 
@@ -220,13 +225,15 @@
 		</pre>
 	</div>
 
-	<div class="mt-12 h-screen w-full relative overflow-auto bg-gray-50 mb-20">
-		{#if fetching}
-			<div class="h-full w-full animate-pulse bg-gray-300" />
-		{:else if error}
-			<pre class="text-sm text-left p-4">{JSON.stringify(errorData, null, 4)}</pre>
-		{:else if imageData != ''}
-			<RenderImage bind:imageData bind:websiteUrl />
-		{/if}
-	</div>
+	{#if show}
+		<div class="mt-12 h-screen w-full relative overflow-auto bg-gray-50 mb-20">
+			{#if fetching}
+				<div class="h-full w-full animate-pulse bg-gray-300" />
+			{:else if error}
+				<pre class="text-sm text-left p-4">{JSON.stringify(errorData, null, 4)}</pre>
+			{:else if imageUrl != ''}
+				<RenderImage bind:imageUrl bind:websiteUrl />
+			{/if}
+		</div>
+	{/if}
 </div>

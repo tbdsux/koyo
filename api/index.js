@@ -43,12 +43,15 @@ app.post('/screenshot', async (req, res) => {
 		height: _height
 	};
 
+	/** @type {import('puppeteer').Browser | import('playwright-core').Browser | null} */
+	let browser = null;
+
 	try {
 		/** @type {Buffer} */
 		let img;
 
 		if (_usePuppeteer) {
-			const browser = await puppeteer.launch({
+			browser = await puppeteer.launch({
 				args: chromium.args,
 				executablePath: await chromium.executablePath,
 				headless: chromium.headless,
@@ -65,12 +68,10 @@ app.post('/screenshot', async (req, res) => {
 				type: _imageType
 			});
 			img = Buffer.from(data, 'base64');
-
-			await browser.close();
 		} else {
 			_imageType = 'png'; // playwright doesn't support webp
 
-			const browser = await playwright.launch({
+			browser = await playwright.launch({
 				args: chromium.args,
 				executablePath: await chromium.executablePath,
 				headless: chromium.headless
@@ -82,6 +83,10 @@ app.post('/screenshot', async (req, res) => {
 			await page.goto(website, { waitUntil: 'load' });
 			img = await page.screenshot({ fullPage: _fullPage, type: _imageType });
 		}
+
+		// close browser
+		await browser.close();
+		browser = null;
 
 		// send to whitehole if exists
 		if (_whiteholeUrl != '') {
@@ -112,6 +117,15 @@ app.post('/screenshot', async (req, res) => {
 		});
 		res.end(img);
 	} catch (e) {
+		try {
+			if (browser != null) {
+				// make sure to close the browser
+				await browser.close();
+			}
+		} catch (e) {
+			console.error(e);
+		}
+
 		res.status(500).json({ error: true, message: String(e), code: 500 });
 	}
 });
