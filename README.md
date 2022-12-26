@@ -4,7 +4,14 @@
     <p>Web screenshot service api</p>
 </div>
 
-## New Features
+## Changelog
+
+### v0.2.0
+
+- Bug fixes and some minor adjustments and additions
+- Download image button
+
+### v0.1.1
 
 - Whitehole integration from https://alpha.deta.space/discovery/@mikhailsdv/black_hole-3kf
 
@@ -19,7 +26,7 @@ This project is a monorepo using `pnpm`.
 - Clone the repository
 
   ```sh
-  git clone https://github.com/TheBoringDude/koyo.git
+  git clone https://github.com/tbdsux/koyo.git
   ```
 
 - Install the dependencies
@@ -42,4 +49,4 @@ This project is a monorepo using `pnpm`.
 
 ##
 
-**&copy; 2022 | TheBoringDude**
+**&copy; 2022 | tbdsux**

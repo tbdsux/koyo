@@ -2,11 +2,18 @@
 title: 'koyo'
 tagline: 'Website screenshot service api'
 theme_color: '#3b82f6'
-git: 'https://github.com/TheBoringDude/koyo'
-homepage: 'https://github.com/TheBoringDude/koyo'
+git: 'https://github.com/tbdsux/koyo'
+homepage: 'https://github.com/tbdsux/koyo'
 ---
 
-## New Features
+## Changelog
+
+### v0.2.0
+
+- Bug fixes and some minor adjustments and additions
+- Download image button
+
+### v0.1.1
 
 - Whitehole integration from https://alpha.deta.space/discovery/@mikhailsdv/black_hole-3kf
 
@@ -21,7 +28,7 @@ This project is a monorepo using `pnpm`.
 - Clone the repository
 
   ```sh
-  git clone https://github.com/TheBoringDude/koyo.git
+  git clone https://github.com/tbdsux/koyo.git
   ```
 
 - Install the dependencies

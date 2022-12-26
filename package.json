@@ -1,6 +1,6 @@
 {
 	"name": "koyo",
-	"version": "0.1.1",
+	"version": "0.2.0",
 	"description": "Website screenshot service api",
 	"main": "index.js",
 	"scripts": {
