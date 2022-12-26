@@ -2,6 +2,7 @@
 	import { apiUrl, type APIResponse } from '$lib/api';
 	import type { PageServerData } from './$types';
 	import RenderImage from './RenderImage.svelte';
+	import SaveImage from './SaveImage.svelte';
 
 	export let data: PageServerData;
 
@@ -25,8 +26,8 @@
 		if (!websiteUrl) return;
 
 		imageUrl = '';
-		fetching = true;
 		show = true;
+		fetching = true;
 
 		if (optionsDriver === 'playwright') {
 			optionsImageType = 'png';
@@ -226,14 +227,20 @@
 	</div>
 
 	{#if show}
-		<div class="mt-12 h-screen w-full relative overflow-auto bg-gray-50 mb-20">
-			{#if fetching}
-				<div class="h-full w-full animate-pulse bg-gray-300" />
-			{:else if error}
-				<pre class="text-sm text-left p-4">{JSON.stringify(errorData, null, 4)}</pre>
-			{:else if imageUrl != ''}
-				<RenderImage bind:imageUrl bind:websiteUrl />
+		<div class="mt-12">
+			{#if imageUrl != ''}
+				<SaveImage bind:imageUrl bind:websiteUrl bind:optionsImageType />
 			{/if}
+
+			<div class="mt-2 h-screen w-full relative overflow-auto mb-20">
+				{#if fetching}
+					<div class="h-full w-full animate-pulse bg-gray-300" />
+				{:else if error}
+					<pre class="text-sm text-left p-4 bg-gray-50">{JSON.stringify(errorData, null, 4)}</pre>
+				{:else if imageUrl != ''}
+					<RenderImage bind:imageUrl bind:websiteUrl />
+				{/if}
+			</div>
 		</div>
 	{/if}
 </div>
