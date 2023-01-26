@@ -14,6 +14,33 @@ go install github.com/tbdsux/koyo/cli/koyo@latest
 koyo --api https://your-koyo-app-instance-url.deta.app https://alpha.deta.space
 ```
 
-## TODO
+### Config management
 
-- Store koyo app url and other options to a config.
+The CLI creates a default config file which can be configured accordingly at `$HOME/.koyo.yaml`
+
+```yaml
+# Default Config
+api: ''
+driver: playwright
+fullPage: false
+height: 800
+imageType: png
+whiteHole: ''
+width: 1280
+```
+
+#### Update config
+
+The keys from the default config can be updated as such...
+
+```
+koyo set config.[key] [value]
+```
+
+```
+koyo set config.width 1400
+```
+
+##
+
+**tbdsux | &copy; 2023**

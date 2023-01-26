@@ -8,12 +8,18 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
+func init() {
+	command.InitConfig()
+}
+
 func main() {
+
 	app := &cli.App{
-		Name:   "koyo",
-		Usage:  "Screenshot any website with ease.",
-		Flags:  command.ScreenshotFlags,
-		Action: command.Screenshot,
+		Name:     "koyo",
+		Usage:    "Screenshot any website with ease.",
+		Flags:    command.ScreenshotFlags,
+		Action:   command.Screenshot,
+		Commands: []*cli.Command{command.SetConfigCommand},
 	}
 
 	if err := app.Run(os.Args); err != nil {

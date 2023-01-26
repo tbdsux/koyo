@@ -32,42 +32,49 @@ var ScreenshotFlags = []cli.Flag{
 		Value:       1280,
 		Usage:       "set the viewport width",
 		Destination: &optionsWidth,
+		DefaultText: "config.width || 1280",
 	},
 	&cli.IntFlag{
 		Name:        "height",
 		Value:       800,
 		Usage:       "set the viewport height",
 		Destination: &optionsHeight,
+		DefaultText: "config.height || 800",
 	},
 	&cli.BoolFlag{
 		Name:        "fullPage",
 		Value:       false,
 		Usage:       "screenshot website as full page",
 		Destination: &optionsFullpage,
+		DefaultText: "config.fullPage || false",
 	},
 	&cli.StringFlag{
 		Name:        "driver",
 		Value:       "playwright",
 		Usage:       "the driver for the screenshot api to use (playwright | puppeteer)",
 		Destination: &optionsDriver,
+		DefaultText: "config.driver || playwright",
 	},
 	&cli.StringFlag{
 		Name:        "imageType",
 		Value:       "png",
 		Usage:       "screenshot output image type (png | jpeg)",
 		Destination: &optionsImageType,
+		DefaultText: "config.imageType || png",
 	},
 	&cli.StringFlag{
 		Name:        "whiteHole",
 		Value:       "",
 		Usage:       "your WhiteHole integration url",
 		Destination: &optionsWhiteHole,
+		DefaultText: "config.whiteHole || ",
 	},
 	&cli.StringFlag{
 		Name:        "api",
 		Value:       "",
 		Usage:       "your deta space koyo instance app url (https://your-koyo-app.instance.deta.app)",
 		Destination: &optionsApi,
+		DefaultText: "config.api || ",
 	},
 	&cli.StringFlag{
 		Name:        "output",
@@ -103,22 +110,39 @@ var Screenshot = func(c *cli.Context) error {
 	}
 
 	if optionsApi == "" {
-		return errors.New("no KOYO API set, please set with --api option")
+		altApi := myConfig.String("api", "")
+		if altApi == "" {
+			return errors.New("no KOYO API set, please set with --api option")
+		}
+
+		optionsApi = altApi
+	}
+
+	if optionsWhiteHole == "" {
+		altWhitehole := myConfig.String("whiteHole", "")
+		if altWhitehole != "" {
+			optionsWhiteHole = altWhitehole
+		}
 	}
 
 	spinner := spinner.New()
 	website := c.Args().Get(0)
 
-	imageType := optionsImageType
-	if optionsImageType != "png" && optionsImageType != "jpeg" {
+	imageType := myConfig.String("imageType", optionsImageType)
+	if imageType != "png" && imageType != "jpeg" {
 		imageType = "png"
 	}
 
+	driver := myConfig.String("driver", optionsDriver)
+	if driver != "playwright" && driver != "puppeteer" {
+		driver = "playwright"
+	}
+
 	queryOptions := APIQuery{
-		Width:     optionsWidth,
-		Height:    optionsHeight,
-		FullPage:  optionsFullpage,
-		Driver:    optionsDriver,
+		Width:     myConfig.Int("width", optionsWidth),
+		Height:    myConfig.Int("height", optionsHeight),
+		FullPage:  myConfig.Bool("fullPage", optionsFullpage),
+		Driver:    driver,
 		ImageType: imageType,
 		WhiteHole: optionsWhiteHole,
 	}
