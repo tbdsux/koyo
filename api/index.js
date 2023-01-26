@@ -102,7 +102,7 @@ app.post('/screenshot', async (req, res) => {
 				const data = await r.json();
 				const { error, status } = data;
 				if (!status) {
-					res.status(500).json({ error: false, message: error, code: 500 });
+					res.status(500).json({ error: true, message: error, code: 500 });
 					return;
 				}
 			} catch (e) {

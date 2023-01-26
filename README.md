@@ -4,6 +4,8 @@
     <p>Web screenshot service api</p>
 </div>
 
+## [CLI](./cli/koyo)
+
 ## Changelog
 
 ### v0.2.0
