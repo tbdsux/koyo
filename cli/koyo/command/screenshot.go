@@ -23,6 +23,7 @@ var (
 	optionsImageType string
 	optionsWhiteHole string
 	optionsApi       string
+	optionsApiKey    string
 	optionsOutput    string
 )
 
@@ -77,6 +78,13 @@ var ScreenshotFlags = []cli.Flag{
 		DefaultText: "config.api || ",
 	},
 	&cli.StringFlag{
+		Name:        "apiKey",
+		Value:       "",
+		Usage:       "your space app api key (generate from your dashboard)",
+		Destination: &optionsApiKey,
+		DefaultText: "config.apiKey || ",
+	},
+	&cli.StringFlag{
 		Name:        "output",
 		Value:       "",
 		Usage:       "output filename",
@@ -116,6 +124,15 @@ var Screenshot = func(c *cli.Context) error {
 		}
 
 		optionsApi = altApi
+	}
+
+	if optionsApiKey == "" {
+		altApiKey := myConfig.String("apiKey", "")
+		if altApiKey == "" {
+			return errors.New("missing Space APP Api Key, please generate an `api_key` from your space app settings and set it with the --apiKey flag")
+		}
+
+		optionsApiKey = altApiKey
 	}
 
 	if optionsWhiteHole == "" {
@@ -163,7 +180,17 @@ var Screenshot = func(c *cli.Context) error {
 	spinner.Start("Fetching screenshot...")
 
 	// send request to screenshot api
-	resp, err := http.Post(url, "application/json", bytes.NewBuffer(jsonBody))
+	r, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonBody))
+	if err != nil {
+		spinner.Error(err.Error())
+		return errors.New("there was a problem while parsing the request body")
+	}
+	r.Header.Add("Content-Type", "application/json")
+	r.Header.Add("X-Space-App-Key", optionsApiKey)
+
+	client := &http.Client{}
+	resp, err := client.Do(r)
+
 	if err != nil {
 		spinner.Error(err.Error())
 		return errors.New("there was a problem while trying to fetch your screenshot")

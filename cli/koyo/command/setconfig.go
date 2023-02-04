@@ -44,6 +44,7 @@ func InitConfig() {
 		myConfig.Set("imageType", "png")
 		myConfig.Set("whiteHole", "")
 		myConfig.Set("api", "")
+		myConfig.Set("apiKey", "")
 
 		writeConfig()
 	}
@@ -85,6 +86,7 @@ var SetConfigCommand = &cli.Command{
 			fmt.Printf("imageType: %s\n", myConfig.String("imageType"))
 			fmt.Printf("whiteHole: %s\n", myConfig.String("whiteHole"))
 			fmt.Printf("api: %s\n", myConfig.String("api"))
+			fmt.Printf("apiKey: %s\n", myConfig.String("apiKey"))
 
 			return nil
 		}
@@ -140,6 +142,9 @@ var SetConfigCommand = &cli.Command{
 		}
 		if key == "config.api" {
 			myConfig.Set("api", value)
+		}
+		if key == "config.apiKey" {
+			myConfig.Set("apiKey", value)
 		}
 
 		// update new config change

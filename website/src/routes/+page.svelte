@@ -206,11 +206,25 @@
 						</div>
 					</div>
 
+					<!-- <hr class="my-4 mx-8 border-gray-100" />
+
+					<div class="flex items-center justify-center">
+						<div class="flex flex-col">
+							<label for="save-to-drive" class="text-sm text-gray-700 inline-flex items-center">
+								Save To Drive (auto)
+							</label>
+							<select class="text-sm py-2 px-3 border rounded-xl w-48 bg-white">
+								<option selected value="">(do not save)</option>
+								<option value="my-drive">drive</option>
+							</select>
+						</div>
+					</div> -->
+
 					<hr class="my-4 mx-8 border-gray-100" />
 
 					<div class="flex items-center justify-center">
 						<div class="flex flex-col w-11/12 md:w-5/6  2xl:w-1/2 mx-auto">
-							<label for="height" class="">
+							<label for="whitehole" class="">
 								<a
 									href="https://alpha.deta.space/discovery/@mikhailsdv/black_hole-3kf"
 									target="_blank"
@@ -258,6 +272,7 @@
 				optionsWhitehole ? '&whiteholeUrl=' + optionsWhitehole : ''
 			}' \\
 	--header 'Content-Type: application/json' \\
+	--header 'X-Space-App-Key: your-space-app-api-key' \\
 	--data-raw '{"website":"${websiteUrl}"}' \\
 	--output screenshot.${optionsImageType}`}
 		</pre>

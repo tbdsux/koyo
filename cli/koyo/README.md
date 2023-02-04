@@ -21,6 +21,7 @@ The CLI creates a default config file which can be configured accordingly at `$H
 ```yaml
 # Default Config
 api: ''
+apiKey: ''
 driver: playwright
 fullPage: false
 height: 800

@@ -7,10 +7,10 @@ micros:
     engine: svelte-kit
     primary: true
 
-  - name: api
+  - name: scr-api
     src: ./api
     engine: nodejs16
     run: 'node index.js'
     path: api
-    public_routes:
-      - '/*'
+    presets:
+      api_keys: true
