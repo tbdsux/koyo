@@ -6,3 +6,7 @@ node_modules
 .output
 .turbo
 .space
+
+
+# .env
+.env

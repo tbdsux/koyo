@@ -1,8 +1,10 @@
 <script lang="ts">
+	import { invalidate, invalidateAll } from '$app/navigation';
 	import { apiUrl, type APIResponse } from '$lib/api';
 	import type { PageServerData } from './$types';
-	import RenderImage from './RenderImage.svelte';
+	import Output from './Output.svelte';
 	import SaveImage from './SaveImage.svelte';
+	import ViewDrive from './ViewDrive.svelte';
 
 	export let data: PageServerData;
 
@@ -13,12 +15,15 @@
 	let optionsImageType = 'png';
 	let optionsDriver = 'playwright';
 	let optionsWhitehole = '';
+	let optionsSaveDrive = false;
+	let optionsNoOutput = false;
 
 	let showOptions = true;
 	let show = false;
 	let error = false;
 	let errorData: APIResponse | null = null;
 	let fetching = false;
+	let done = false;
 
 	let imageUrl: string = '';
 
@@ -28,9 +33,14 @@
 		imageUrl = '';
 		show = true;
 		fetching = true;
+		done = false;
 
 		if (optionsDriver === 'playwright') {
 			optionsImageType = 'png';
+		}
+
+		if (!optionsSaveDrive) {
+			optionsNoOutput = false;
 		}
 
 		const params = new URLSearchParams({
@@ -39,7 +49,9 @@
 			imageType: optionsImageType,
 			fullPage: optionsFullpage.toString(),
 			driver: optionsDriver,
-			whiteholeUrl: optionsWhitehole
+			whiteholeUrl: optionsWhitehole,
+			saveToDrive: optionsSaveDrive.toString(),
+			saveNoOutput: optionsNoOutput.toString()
 		});
 		const paramQueries = params.toString();
 		if (paramQueries == '') {
@@ -65,6 +77,17 @@
 
 		error = false;
 		errorData = null;
+		done = true;
+
+		if (optionsSaveDrive) {
+			// re-fetch if screenshot is saved to drive
+			invalidateAll();
+		}
+
+		if (optionsNoOutput) {
+			return;
+		}
+
 		const imageData = await r.blob();
 		imageUrl = URL.createObjectURL(imageData);
 	};
@@ -102,14 +125,14 @@
 				type="text"
 				id="website"
 				name="website"
-				class="m-1 py-2 px-5 rounded-xl border-2 outline-none hover:border-blue-500 focus:border-blue-500 w-full"
-				placeholder="https://www.deta.sh"
+				class="m-0.5 py-2 px-5 rounded-xl border-2 outline-none hover:border-blue-500 focus:border-blue-500 w-full"
+				placeholder="https://www.deta.space"
 			/>
 
 			<button
 				on:click={fetchScreenshot}
 				disabled={fetching}
-				class="m-1 inline-flex items-center text-sm bg-blue-400 hover:bg-blue-500 py-2 px-8 rounded-xl text-white duration-300 disabled:opacity-80 disabled:hover:bg-blue-400"
+				class="m-0.5 inline-flex items-center text-sm bg-blue-400 hover:bg-blue-500 py-2 px-8 rounded-xl text-white duration-300 disabled:opacity-80 disabled:hover:bg-blue-400"
 			>
 				<svg
 					xmlns="http://www.w3.org/2000/svg"
@@ -134,6 +157,8 @@
 					{/if}</span
 				>
 			</button>
+
+			<ViewDrive bind:data />
 		</div>
 
 		<div class="mt-2">
@@ -206,19 +231,43 @@
 						</div>
 					</div>
 
-					<!-- <hr class="my-4 mx-8 border-gray-100" />
+					<hr class="my-4 mx-8 border-gray-100" />
 
-					<div class="flex items-center justify-center">
-						<div class="flex flex-col">
-							<label for="save-to-drive" class="text-sm text-gray-700 inline-flex items-center">
-								Save To Drive (auto)
-							</label>
-							<select class="text-sm py-2 px-3 border rounded-xl w-48 bg-white">
-								<option selected value="">(do not save)</option>
-								<option value="my-drive">drive</option>
-							</select>
+					<div class="flex flex-wrap items-end justify-center">
+						<div class="inline-flex items-center flex-row m-2">
+							<input
+								bind:checked={optionsSaveDrive}
+								type="checkbox"
+								name="fullpage"
+								id="fullpage"
+								class="h-4 w-4 text-sm border rounded-xl"
+							/>
+							<!-- svelte-ignore a11y-click-events-have-key-events -->
+							<span
+								on:click={() => (optionsSaveDrive = !optionsSaveDrive)}
+								class="text-sm ml-1 text-gray-700 cursor-pointer"
+								title="Do not return the image screenshot output.">Save to Drive (auto)</span
+							>
 						</div>
-					</div> -->
+
+						{#if optionsSaveDrive}
+							<div class="inline-flex items-center flex-row m-2">
+								<input
+									bind:checked={optionsNoOutput}
+									type="checkbox"
+									name="fullpage"
+									id="fullpage"
+									class="h-4 w-4 text-sm border rounded-xl"
+								/>
+								<!-- svelte-ignore a11y-click-events-have-key-events -->
+								<span
+									on:click={() => (optionsNoOutput = !optionsNoOutput)}
+									class="text-sm ml-1 text-gray-700 cursor-pointer"
+									title="Do not return the image screenshot output.">No Output</span
+								>
+							</div>
+						{/if}
+					</div>
 
 					<hr class="my-4 mx-8 border-gray-100" />
 
@@ -263,14 +312,23 @@
 			{/if}
 		</div>
 
+		<div class="my-3">
+			<a
+				class="text-sm underline text-gray-600 hover:text-gray-700"
+				href="https://deta.space/docs/en/basics/micros#api-keys"
+				target="_blank"
+				rel="noopener noreferrer">Where to get API Keys?</a
+			>
+		</div>
+
 		<pre
 			class="mt-4 overflow-auto text-left text-sm bg-gray-100 text-gray-700 py-2 px-3 rounded-xl">
 {`curl -X POST \\
 	'${
 		data.baseUrl
-	}/screenshot?height=${optionsHeight}&width=${optionsWidth}&imageType=${optionsImageType}&fullPage=${optionsFullpage}${
-				optionsWhitehole ? '&whiteholeUrl=' + optionsWhitehole : ''
-			}' \\
+	}/screenshot?height=${optionsHeight}&width=${optionsWidth}&imageType=${optionsImageType}&fullPage=${optionsFullpage}&saveToDrive=${optionsSaveDrive}${
+				optionsSaveDrive ? '&saveNoOutput=' + optionsNoOutput.toString() : ''
+			}${optionsWhitehole ? '&whiteholeUrl=' + optionsWhitehole : ''}' \\
 	--header 'Content-Type: application/json' \\
 	--header 'X-Space-App-Key: your-space-app-api-key' \\
 	--data-raw '{"website":"${websiteUrl}"}' \\
@@ -289,8 +347,8 @@
 					<div class="h-full w-full animate-pulse bg-gray-300" />
 				{:else if error}
 					<pre class="text-sm text-left p-4 bg-gray-50">{JSON.stringify(errorData, null, 4)}</pre>
-				{:else if imageUrl != ''}
-					<RenderImage bind:imageUrl bind:websiteUrl />
+				{:else if done}
+					<Output bind:imageUrl bind:websiteUrl {optionsNoOutput} />
 				{/if}
 			</div>
 		</div>

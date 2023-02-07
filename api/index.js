@@ -5,11 +5,13 @@ const puppeteer = require('puppeteer');
 const cors = require('cors');
 const FormData = require('form-data');
 const fetch = require('cross-fetch');
+const { Drive } = require('deta');
 
 const app = express();
 const port = 8080;
 
 const imageTypes = ['png', 'jpeg', 'webp'];
+const drive = Drive('__default__');
 
 app.use(cors());
 app.use(express.json());
@@ -27,8 +29,9 @@ app.post('/screenshot', async (req, res) => {
 		return;
 	}
 
-	/** @type {import('./types').ScreenshotApiOptions} */
-	const { height, width, imageType, fullPage, driver, whiteholeUrl } = req.query;
+	/** @type {import('./types').ScreenshotApiO=ptions} */
+	const { height, width, imageType, fullPage, driver, whiteholeUrl, saveToDrive, saveNoOutput } =
+		req.query;
 
 	const _height = !isNaN(Number(height)) ? Number(height) : 1280;
 	const _width = !isNaN(Number(width)) ? Number(width) : 800;
@@ -111,6 +114,20 @@ app.post('/screenshot', async (req, res) => {
 			}
 		}
 
+		// save to drive if true
+		if (saveToDrive === 'true') {
+			drive.put(`${new Date().toISOString()}-${new URL(website).hostname}.${imageType}`, {
+				data: img,
+				contentType: `image/${imageType}`
+			});
+
+			// if noOutput is set, do not return the screenshot image
+			if (saveNoOutput === 'true') {
+				res.status(200).json({ error: false, message: 'Successfully saved screenshot to Drive.' });
+				return;
+			}
+		}
+
 		res.writeHead(200, {
 			'Content-Type': `image/${_imageType}`,
 			'Content-Length': img.length
@@ -128,6 +145,40 @@ app.post('/screenshot', async (req, res) => {
 
 		res.status(500).json({ error: true, message: String(e), code: 500 });
 	}
+});
+
+app.get('/drive/files', async (req, res) => {
+	let result = await drive.list();
+	let allFiles = result.names;
+	let last = result.paging?.last;
+
+	while (last) {
+		// provide last from previous call
+		result = await drive.list({ last: result.paging.last });
+
+		allFiles = allFiles.concat(result.names);
+
+		// update last
+		last = result.paging.last;
+	}
+
+	res.status(200).json({ error: false, data: allFiles, code: 200 });
+});
+
+app.get(`/drive/files/:filename`, async (req, res) => {
+	const { filename } = req.params;
+
+	const blob = await drive.get(filename);
+
+	if (blob == null) {
+		res.status(404).json({ error: true, message: 'Screenshot not found.', code: 404 });
+		return;
+	}
+
+	const buffer = await blob.arrayBuffer();
+
+	res.type(blob.type);
+	res.send(Buffer.from(buffer));
 });
 
 app.listen(port, () => {

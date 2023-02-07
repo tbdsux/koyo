@@ -9,5 +9,6 @@
 			"dependsOn": ["^dev"],
 			"cache": false
 		}
-	}
+	},
+	"globalEnv": ["DETA_PROJECT_KEY"]
 }

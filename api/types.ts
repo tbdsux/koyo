@@ -5,6 +5,8 @@ export interface ScreenshotApiOptions {
 	fullPage?: string;
 	driver?: 'playwright' | 'puppeteer';
 	whiteholeUrl?: string;
+	saveToDrive?: string;
+	saveNoOutput?: string;
 }
 
 export interface ScreenshotBodyOptions {
