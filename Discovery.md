@@ -8,6 +8,12 @@ homepage: 'https://github.com/tbdsux/koyo'
 
 ## Changelog
 
+### v0.3.0
+
+- Added [`API Keys`](https://deta.space/docs/en/basics/micros#api-keys) for security purposes.
+- Added **Save To Drive** screenshot api option. Can also view saved screenshots.
+- Add more features for [CLI](./cli/koyo/README.md)
+
 ### v0.2.0
 
 - Bug fixes and some minor adjustments and additions
