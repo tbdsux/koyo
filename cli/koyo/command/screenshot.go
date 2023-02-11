@@ -16,15 +16,17 @@ import (
 )
 
 var (
-	optionsWidth     int
-	optionsHeight    int
-	optionsFullpage  bool
-	optionsDriver    string
-	optionsImageType string
-	optionsWhiteHole string
-	optionsApi       string
-	optionsApiKey    string
-	optionsOutput    string
+	optionsWidth        int
+	optionsHeight       int
+	optionsFullpage     bool
+	optionsDriver       string
+	optionsImageType    string
+	optionsWhiteHole    string
+	optionsApi          string
+	optionsApiKey       string
+	optionsOutput       string
+	optionsSaveToDrive  bool
+	optionsSaveNoOutput bool
 )
 
 var ScreenshotFlags = []cli.Flag{
@@ -34,6 +36,7 @@ var ScreenshotFlags = []cli.Flag{
 		Usage:       "set the viewport width",
 		Destination: &optionsWidth,
 		DefaultText: "config.width || 1280",
+		Category:    "Parameters",
 	},
 	&cli.IntFlag{
 		Name:        "height",
@@ -41,6 +44,7 @@ var ScreenshotFlags = []cli.Flag{
 		Usage:       "set the viewport height",
 		Destination: &optionsHeight,
 		DefaultText: "config.height || 800",
+		Category:    "Parameters",
 	},
 	&cli.BoolFlag{
 		Name:        "fullPage",
@@ -48,6 +52,7 @@ var ScreenshotFlags = []cli.Flag{
 		Usage:       "screenshot website as full page",
 		Destination: &optionsFullpage,
 		DefaultText: "config.fullPage || false",
+		Category:    "Parameters",
 	},
 	&cli.StringFlag{
 		Name:        "driver",
@@ -55,6 +60,7 @@ var ScreenshotFlags = []cli.Flag{
 		Usage:       "the driver for the screenshot api to use (playwright | puppeteer)",
 		Destination: &optionsDriver,
 		DefaultText: "config.driver || playwright",
+		Category:    "Parameters",
 	},
 	&cli.StringFlag{
 		Name:        "imageType",
@@ -62,6 +68,7 @@ var ScreenshotFlags = []cli.Flag{
 		Usage:       "screenshot output image type (png | jpeg)",
 		Destination: &optionsImageType,
 		DefaultText: "config.imageType || png",
+		Category:    "Parameters",
 	},
 	&cli.StringFlag{
 		Name:        "whiteHole",
@@ -69,6 +76,7 @@ var ScreenshotFlags = []cli.Flag{
 		Usage:       "your WhiteHole integration url",
 		Destination: &optionsWhiteHole,
 		DefaultText: "config.whiteHole || ",
+		Category:    "Parameters",
 	},
 	&cli.StringFlag{
 		Name:        "api",
@@ -76,6 +84,7 @@ var ScreenshotFlags = []cli.Flag{
 		Usage:       "your deta space koyo instance app url (https://your-koyo-app.instance.deta.app)",
 		Destination: &optionsApi,
 		DefaultText: "config.api || ",
+		Category:    "CLI Configurations",
 	},
 	&cli.StringFlag{
 		Name:        "apiKey",
@@ -83,6 +92,7 @@ var ScreenshotFlags = []cli.Flag{
 		Usage:       "your space app api key (generate from your dashboard)",
 		Destination: &optionsApiKey,
 		DefaultText: "config.apiKey || ",
+		Category:    "CLI Configurations",
 	},
 	&cli.StringFlag{
 		Name:        "output",
@@ -90,16 +100,35 @@ var ScreenshotFlags = []cli.Flag{
 		Usage:       "output filename",
 		DefaultText: "<website>.<imageType>",
 		Destination: &optionsOutput,
+		Category:    "CLI Configurations",
+	},
+	&cli.BoolFlag{
+		Name:        "save-to-drive",
+		Value:       false,
+		Usage:       "save the screenshot to drive",
+		DefaultText: "false",
+		Destination: &optionsSaveToDrive,
+		Category:    "Parameters",
+	},
+	&cli.BoolFlag{
+		Name:        "no-output",
+		Value:       false,
+		Usage:       "do not return the screenshot image output (can be only used with --save-to-drive flag)",
+		DefaultText: "false",
+		Destination: &optionsSaveNoOutput,
+		Category:    "Parameters",
 	},
 }
 
 type APIQuery struct {
-	Width     int    `url:"width,omitempty"`
-	Height    int    `url:"height,omitempty"`
-	FullPage  bool   `url:"fullPage,omitempty"`
-	Driver    string `url:"driver,omitempty"`
-	ImageType string `url:"imageType,omitempty"`
-	WhiteHole string `url:"whiteHole,omitempty"`
+	Width        int    `url:"width,omitempty"`
+	Height       int    `url:"height,omitempty"`
+	FullPage     bool   `url:"fullPage,omitempty"`
+	Driver       string `url:"driver,omitempty"`
+	ImageType    string `url:"imageType,omitempty"`
+	WhiteHole    string `url:"whiteHole,omitempty"`
+	SaveToDrive  bool   `url:"saveToDrive,omitempty"`
+	SaveNoOutput bool   `url:"saveNoOutput,omitempty"`
 }
 
 type APIBody struct {
@@ -156,12 +185,14 @@ var Screenshot = func(c *cli.Context) error {
 	}
 
 	queryOptions := APIQuery{
-		Width:     myConfig.Int("width", optionsWidth),
-		Height:    myConfig.Int("height", optionsHeight),
-		FullPage:  myConfig.Bool("fullPage", optionsFullpage),
-		Driver:    driver,
-		ImageType: imageType,
-		WhiteHole: optionsWhiteHole,
+		Width:        myConfig.Int("width", optionsWidth),
+		Height:       myConfig.Int("height", optionsHeight),
+		FullPage:     myConfig.Bool("fullPage", optionsFullpage),
+		Driver:       driver,
+		ImageType:    imageType,
+		WhiteHole:    optionsWhiteHole,
+		SaveToDrive:  optionsSaveToDrive,
+		SaveNoOutput: optionsSaveNoOutput,
 	}
 	q, _ := query.Values(queryOptions)
 
@@ -196,15 +227,23 @@ var Screenshot = func(c *cli.Context) error {
 		return errors.New("there was a problem while trying to fetch your screenshot")
 	}
 
+	defer resp.Body.Close()
+
 	if resp.StatusCode != 200 {
 		var err APIError
 		json.NewDecoder(resp.Body).Decode(&err)
+
+		fmt.Println(err)
 
 		spinner.Error(err.Message)
 		return errors.New(err.Message)
 	}
 
-	defer resp.Body.Close()
+	if optionsSaveToDrive && optionsSaveNoOutput {
+		// if no output is passed, api will return a json ok response
+		spinner.Success("Successfully saved screenshot to Drive, you can check your screenshots from your drive with the `drive` command.")
+		return nil
+	}
 
 	// generate output filename
 	filename := fmt.Sprintf("%s.%s", strings.ReplaceAll(strings.ReplaceAll(website, "https://", ""), "http://", ""), optionsImageType)

@@ -29,7 +29,7 @@ app.post('/screenshot', async (req, res) => {
 		return;
 	}
 
-	/** @type {import('./types').ScreenshotApiO=ptions} */
+	/** @type {import('./types').ScreenshotApiOptions} */
 	const { height, width, imageType, fullPage, driver, whiteholeUrl, saveToDrive, saveNoOutput } =
 		req.query;
 

@@ -15,11 +15,12 @@ func init() {
 func main() {
 
 	app := &cli.App{
-		Name:     "koyo",
-		Usage:    "Screenshot any website with ease.",
-		Flags:    command.ScreenshotFlags,
-		Action:   command.Screenshot,
-		Commands: []*cli.Command{command.SetConfigCommand},
+		Name:      "koyo",
+		Usage:     "Screenshot any website with ease.",
+		UsageText: "koyo [...options] [website]",
+		Flags:     command.ScreenshotFlags,
+		Action:    command.Screenshot,
+		Commands:  []*cli.Command{command.SetConfigCommand, command.DriveCommand},
 	}
 
 	if err := app.Run(os.Args); err != nil {
