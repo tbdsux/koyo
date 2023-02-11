@@ -1,10 +1,9 @@
 {
 	"name": "koyo",
-	"version": "0.2.0",
-	"description": "Website screenshot service api",
-	"main": "index.js",
+	"version": "0.3.0",
+	"private": true,
+	"description": "Website screenshot service api on Deta Space",
 	"scripts": {
-		"test": "echo \"Error: no test specified\" && exit 1",
 		"build": "turbo run build",
 		"dev": "turbo run dev"
 	},
