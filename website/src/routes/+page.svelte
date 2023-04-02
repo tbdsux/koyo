@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { invalidate, invalidateAll } from '$app/navigation';
+	import { invalidateAll } from '$app/navigation';
 	import { apiUrl, type APIResponse } from '$lib/api';
 	import type { PageServerData } from './$types';
 	import Output from './Output.svelte';
@@ -13,7 +13,7 @@
 	let optionsWidth = 1280;
 	let optionsFullpage = false;
 	let optionsImageType = 'png';
-	let optionsDriver = 'playwright';
+	let optionsDriver = 'puppeteer';
 	let optionsWhitehole = '';
 	let optionsSaveDrive = false;
 	let optionsNoOutput = false;
@@ -272,7 +272,7 @@
 					<hr class="my-4 mx-8 border-gray-100" />
 
 					<div class="flex items-center justify-center">
-						<div class="flex flex-col w-11/12 md:w-5/6  2xl:w-1/2 mx-auto">
+						<div class="flex flex-col w-11/12 md:w-5/6 2xl:w-1/2 mx-auto">
 							<label for="whitehole" class="">
 								<a
 									href="https://alpha.deta.space/discovery/@mikhailsdv/black_hole-3kf"

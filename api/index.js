@@ -1,7 +1,7 @@
 const express = require('express');
 const chromium = require('@sparticuz/chromium');
 const { chromium: playwright } = require('playwright-core');
-const puppeteer = require('puppeteer');
+const puppeteer = require('puppeteer-core');
 const cors = require('cors');
 const FormData = require('form-data');
 const fetch = require('cross-fetch');
@@ -56,8 +56,8 @@ app.post('/screenshot', async (req, res) => {
 		if (_usePuppeteer) {
 			browser = await puppeteer.launch({
 				args: chromium.args,
-				executablePath: await chromium.executablePath,
-				headless: chromium.headless,
+				executablePath: await chromium.executablePath(),
+				headless: 'new',
 				ignoreHTTPSErrors: true
 			});
 			const page = await browser.newPage();
@@ -76,8 +76,8 @@ app.post('/screenshot', async (req, res) => {
 
 			browser = await playwright.launch({
 				args: chromium.args,
-				executablePath: await chromium.executablePath,
-				headless: chromium.headless
+				executablePath: await chromium.executablePath(),
+				headless: true
 			});
 			const context = await browser.newContext();
 			const page = await context.newPage();
