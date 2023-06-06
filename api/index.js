@@ -8,7 +8,7 @@ const fetch = require('cross-fetch');
 const { Drive } = require('deta');
 
 const app = express();
-const port = 8080;
+const port = process.env.PORT ?? 8080;
 
 const imageTypes = ['png', 'jpeg', 'webp'];
 const drive = Drive('__default__');

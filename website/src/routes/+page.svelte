@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { invalidateAll } from '$app/navigation';
-	import { apiUrl, type APIResponse } from '$lib/api';
+	import type { APIResponse } from '$lib/api';
 	import type { PageServerData } from './$types';
 	import Output from './Output.svelte';
 	import SaveImage from './SaveImage.svelte';
@@ -59,7 +59,7 @@
 		}
 		const url = paramQueries != '' ? `/screenshot?${paramQueries}` : '/screenshot';
 
-		const r = await fetch(apiUrl + url, {
+		const r = await fetch("/api" + url, {
 			method: 'POST',
 			headers: {
 				'content-type': 'application/json'

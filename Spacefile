@@ -5,6 +5,7 @@ micros:
   - name: website
     src: ./website
     engine: svelte-kit
+    dev: pnpm dev --port ${PORT}
     primary: true
 
   - name: scr-api
@@ -12,5 +13,6 @@ micros:
     engine: nodejs16
     run: 'node index.js'
     path: api
+    dev: pnpm dev
     presets:
       api_keys: true
